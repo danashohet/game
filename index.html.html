@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>משחק לימוד לשיר "גאווה"</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      direction: rtl;
+      background: linear-gradient(to bottom, #fffde7, #e1f5fe);
+      padding: 20px;
+      animation: fadeInBody 2s ease-in-out;
+    }
+
+    @keyframes fadeInBody {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    h1,
+    h2 {
+      text-align: center;
+      color: #0d47a1;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .question {
+      margin: 15px 0;
+    }
+
+    textarea,
+    select,
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #1565c0;
+      transform: scale(1.05);
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    /* תוספת סגנון לאנימציה של תשובות שנענו */
+    .answered {
+      position: relative;
+      transition: all 0.5s ease;
+    }
+
+    .answered::after {
+      content: '✓';
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 20px;
+      color: #4caf50;
+      opacity: 0;
+      animation: checkmarkFadeIn 0.5s forwards;
+    }
+
+    @keyframes checkmarkFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .pulse {
+      animation: pulse 0.5s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.03);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* סגנון כפתור הייצוא */
+    .export-btn {
+      background-color: #4caf50;
+      margin-right: 10px;
+    }
+
+    .export-btn:hover {
+      background-color: #388e3c;
+    }
+
+    /* מודל ייצוא */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.4s;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .close {
+      color: #aaa;
+      float: left;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: black;
+    }
+
+    #export-area {
+      width: 100%;
+      height: 250px;
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* סגנונות חדשים למשחוק */
+    #game-navigation {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #game-navigation button {
+      margin: 0 10px;
+    }
+
+    #concept-map {
+      width: 100%;
+      height: 400px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+
+    .illustration {
+      max-width: 300px;
+      max-height: 200px;
+      display: block;
+      margin: 20px auto;
+    }
+
+    #bonus-challenge {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    #bonus-challenge textarea {
+      width: 80%;
+      max-width: 500px;
+      height: 100px;
+      margin-bottom: 10px;
+    }
+
+    /* סגנונות חדשים עבור העלאת קובץ */
+    .file-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2px dashed #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .file-upload-container input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-container img {
+      max-width: 100%;
+      max-height: 150px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>משחק לימוד לשיר "גאווה" / דליה רביקוביץ'</h1>
+
+  <div class="section">
+    <h2>מילות השיר</h2>
+    <p style="line-height: 1.8;">
+      אפילו סלעים נשברים, אני אומרת לך,<br />
+      ולא מחמת זקנה.<br />
+      שנים רבות הם שוכבים על גבם בחום ובקור,<br />
+      שנים כה רבות,<br />
+      כמעט נוצר רושם של שלווה.<br />
+      אין הם זזים ממקומם וכך נסתרים הבקיעים.<br />
+      מעין גאווה.<br />
+      שנים רבות עוברות עליהם בציפייה.<br />
+      מי שעתיד לשבר אותם עדיין לא בא.<br />
+      ואז האזוב משגשג, האצות נגרשות והים מגיח וחוזר,<br />
+      ודומה, הם ללא תנועה.<br />
+      עד שיבוא כלב ים קטן להתחכך על הסלעים<br />
+      יבוא וילך.<br />
+      ופתאום האבן פצועה.<br />
+      אמרתי לך, כשסלעים נשברים זה קורה בהפתעה.<br />
+      ומה גם אנשים.
+    </p>
+  </div>
+
+  <form id="quiz-form">
+    <div class="section">
+      <h2>חלק ראשון</h2>
+      <p><strong>הסבר:</strong> האנשה היא תיאור של דבר דומם או חפץ כבעל תכונות אנושיות.</p>
+      <div class="question">
+        <label>1. מה מבין הבאים הוא האנשה?</label><br />
+        <select id="q1">
+          <option value="">בחר תשובה</option>
+          <option value="1">הים עולה ויורד</option>
+          <option value="2">הסלע נשבר</option>
+          <option value="3">האבן פצועה</option>
+          <option value="4">השמש זורחת</option>
+        </select>
+        <div class="feedback" id="f1"></div>
+      </div>
+
+      <p><strong>הסבר:</strong> דימוי הוא השוואה שמכילה את המילה "כמו", "כאילו", "כ".</p>
+      <div class="question">
+        <label>2. כשאני עצוב.ה/שמח.ה/מתרגש.ת/עייפ.ה אני כמו…</label>
+        <textarea id="q2"></textarea>
+      </div>
+
+      <p><strong>הסבר:</strong> שיר לירי מבטא רגשות אישיים של הדובר.</p>
+      <div class="question">
+        <label>3. העתיקו מן השיר מילים המתארות את פניית הדוברת לנמען.ת</label>
+        <textarea id="q3"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>חלק שני</h2>
+      <p><strong>הסבר:</strong> הסלעים נשברים לפתע, אך התהליך התרחש במשך שנים – השיר מדמה את הסלעים לבני אדם.</p>
+      <div class="question">
+        <label>4. מה התכונות של סלעים?</label>
+        <textarea id="q4"></textarea>
+      </div>
+      <div class="question">
+        <label>5. אם כך מדוע מדמה כותבת השיר את האנשים לסלעים?</label>
+        <textarea id="q5"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>חלק שלישי</h2>
+      <p><strong>הסבר:</strong> הארמז הוא רמז לפסוק או פתגם מוכר, כמו: "אם בארזים נפלה שלהבת..."</p>
+      <div class="question">
+        <label>6. כתבו במילים שלכם כיצד הארמז המקראי תורם להבנת משמעות השיר.</label>
+        <textarea id="q6"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>חלק רביעי</h2>
+      <p>
+        <strong>רובד גלוי:</strong> משמעות פשטנית, מה שמופיע ישירות.<br />
+        <strong>רובד סמוי:</strong> משמעות מטאפורית – רמז למשהו עמוק יותר.
+      </p>
+      <div class="question">
+        <label>7. מהו הרובד הגלוי בשיר?</label>
+        <textarea id="q7"></textarea>
+      </div>
+      <div class="question">
+        <label>8. מהו הרובד הסמוי בשיר?</label>
+        <textarea id="q8"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>חלק חמישי</h2>
+      <div class="question">
+        <label>9. מדוע לדעתך קוראים לשיר "גאווה"?</label>
+        <textarea id="q9"></textarea>
+      </div>
+      <div class="question">
+        <label>10. השיר נפתח במילה "אפילו". מה זה מסמן לדעתכם?</label>
+        <textarea id="q10"></textarea>
+      </div>
+      <div class="question">
+        <label>11. מה משמעות השורה האחרונה: "ומה גם אנשים"?</label>
+        <textarea id="q11"></textarea>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <button type="button" class="export-btn" onclick="exportAnswers()">ייצוא תשובות</button>
+      <button type="button" onclick="checkAnswers()">בדוק תשובות</button>
+      <div id="summary" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+  </form>
+
+  <div class="section" id="bonus-challenge">
+    <h2>אתגרי בונוס</h2>
+    <div id="write-verse-challenge">
+      <h3>כתוב בית נוסף לשיר</h3>
+      <textarea id="new-verse" placeholder="כתוב בית כאן..."></textarea>
+      <button onclick="submitNewVerse()">הגש בית</button>
+      <div id="verse-feedback" class="feedback"></div>
+      <div id="write-verse-output"></div>
+      </div>
+
+    <div id="visualize-song-challenge">
+      <h3>המחשה ויזואלית של השיר</h3>
+      <p>
+        חפשו תמונה באינטרנט / צרו ב-AI / כל דרך יצירתית אחרת שמתארת בתמונה את השיר.<br />
+        העלו את התמונה כאן:
+      </p>
+      <div class="file-upload-container">
+        <input type="file" id="visualization-image" accept="image/*" />
+        <label for="visualization-image">לחצו לבחירת תמונה</label>
+        <img id="image-preview" src="" alt="תמונה שנבחרה" style="display: none;" />
+      </div>
+      <textarea id="visualization-description" placeholder="תארו את ההמחשה שלך כאן..."></textarea>
+      <button onclick="submitVisualization()">הגש המחשה</button>
+      <div id="visualization-feedback" class="feedback"></div>
+      <div id="visualization-output"></div>
+      </div>
+  </div>
+
+  <div id="exportModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>ייצוא תשובות</h2>
+      <p>העתק את התשובות שלך למסמך או שלח אותן</p>
+      <textarea id="export-area" readonly></textarea>
+      <div style="text-align: center; margin-top: 15px;">
+        <button type="button" onclick="copyToClipboard()">העתק ללוח</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // להוסיף אירועי מעקב מילוי תשובות עבור האנימציה
+    document.addEventListener('DOMContentLoaded', function () {
+      // מאזין לכל התיבות
+      const inputs = document.querySelectorAll('textarea, select');
+      inputs.forEach(input => {
+        input.addEventListener('change', function () {
+          if (this.value.trim() !== '') {
+            // מוסיף אנימציה לתיבה שמולאה
+            this.closest('.question').classList.add('answered');
+            this.closest('.question').classList.add('pulse');
+            setTimeout(() => {
+              this.closest('.question').classList.remove('pulse');
+            }, 500);
+          } else {
+            // מסיר אנימציה אם השדה ריק
+            this.closest('.question').classList.remove('answered');
+          }
